@@ -63,13 +63,15 @@ namespace Maximized_Window
 			styles ^= Win32.WS_CAPTION;
 
 			// get the previous window rectangle
-			Win32.RECT prevRect;
-			Win32.GetWindowRect(foundWindow, out prevRect);
+			Win32.RECT prevWindowRect;
+			Win32.GetWindowRect(foundWindow, out prevWindowRect);
+			Win32.RECT prevClientRect;
+			Win32.GetClientRect(foundWindow, out prevClientRect);
 
 			// find out the dimensions of the window borders
-			int captionHeight = Win32.GetSystemMetrics(Win32.SystemMetric.SM_CYCAPTION);
-			int borderWidth = Win32.GetSystemMetrics(Win32.SystemMetric.SM_CXDLGFRAME);
-			int borderHeight = Win32.GetSystemMetrics(Win32.SystemMetric.SM_CYDLGFRAME);
+			int captionHeight = SystemInformation.CaptionHeight;
+			int borderWidth = SystemInformation.FixedFrameBorderSize.Width;
+			int borderHeight = SystemInformation.FixedFrameBorderSize.Height;
 
 			// calculate the new window rectangle
 			Win32.RECT newRect;
@@ -77,11 +79,11 @@ namespace Maximized_Window
 			{
 				Rectangle containingRectangle = MoveWindow();
 
-				int renderWidth = prevRect.Right - prevRect.Left - (borderWidth * 2);
-				int renderHeight = prevRect.Bottom - prevRect.Top - (borderHeight * 2) - captionHeight;
+				int renderWidth = prevClientRect.Right;
+				int renderHeight = prevClientRect.Bottom;
 
 				int horizontalCenter = containingRectangle.Left + (containingRectangle.Width / 2);
-				int verticalCenter = containingRectangle.Top + (containingRectangle.Height / 2);
+				int verticalCenter = containingRectangle.Top + (containingRectangle.Height / 2) - captionHeight;
 
 				newRect.Left =  horizontalCenter - (renderWidth / 2);
 				newRect.Right = newRect.Left + renderWidth;
@@ -90,10 +92,10 @@ namespace Maximized_Window
 			}
 			else
 			{
-				newRect.Left = prevRect.Left - borderWidth;
-				newRect.Right = prevRect.Right + borderWidth;
-				newRect.Top = prevRect.Top - captionHeight - borderHeight;
-				newRect.Bottom = prevRect.Bottom + borderHeight;
+				newRect.Left = prevWindowRect.Left - borderWidth;
+				newRect.Right = prevWindowRect.Right + borderWidth;
+				newRect.Top = prevWindowRect.Top - captionHeight - borderHeight;
+				newRect.Bottom = prevWindowRect.Bottom + borderHeight;
 			}
 
 			// set the new window style

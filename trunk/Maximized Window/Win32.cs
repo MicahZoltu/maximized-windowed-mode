@@ -528,6 +528,10 @@ namespace Maximized_Window
 		public static extern bool GetWindowRect(IntPtr hwnd, out RECT lpRect);
 
 		[DllImport("user32.dll")]
+		[return: MarshalAs(UnmanagedType.Bool)]
+		public static extern bool GetClientRect(IntPtr hwd, out RECT lpRect);
+
+		[DllImport("user32.dll")]
 		public static extern int GetSystemMetrics(SystemMetric smIndex);
 
 		[DllImport("user32.dll")]
